@@ -23,3 +23,19 @@ CREATE TABLE `notices` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `attendances` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nfc_id` varchar(255) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `time_recorded` datetime NOT NULL,
+  `date` date NOT NULL,
+  `month` tinyint(2) NOT NULL,
+  `day` tinyint(2) NOT NULL,
+  `flag` tinyint(1) NOT NULL DEFAULT 1,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_active_attendance` (`nfc_id`, `flag`),
+  KEY `date_flag` (`date`, `flag`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `attendances_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
