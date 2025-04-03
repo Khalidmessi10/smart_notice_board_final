@@ -1,0 +1,22 @@
+{
+    "ssos_lab": {
+        "keywords": ["ssos lab", "system software and operating system", "cc15", "CC 15", "cc 15 lab"],
+        "id": 1,
+        "image": "cat.jpg"
+    },
+    "ar_vr_lab": {
+        "keywords": ["ar/vr lab", "augmented reality lab", "virtual reality lab", "cc14", "CC 14", "cc 14 lab","AR and VR lab"],
+        "id": 2,
+        "image": "dog.jpg"
+    },
+    "deep_learning_lab": {
+        "keywords": ["nature"],
+        "id": 3,
+        "image": "nature.jpg"
+    },
+    "robotics_lab": {
+        "keywords": ["forest"],
+        "id": 4,
+        "image": "forest.jpg"
+    }
+}

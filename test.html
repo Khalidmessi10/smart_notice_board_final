@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <h1>Key Test</h1>
+    <p>Press keys to see codes</p>
+    <div id="output"></div>
+    <script>
+        document.addEventListener('keydown', function(e) {
+            document.getElementById('output').innerHTML = `
+                Key: ${e.key}<br>
+                Code: ${e.keyCode}<br>
+                Key pressed: ${e.key.toUpperCase()}
+            `;
+        });
+    </script>
+</body>
+</html>

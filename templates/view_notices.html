@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Smart Notice Board</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2980b9;
+            --accent-color: #e67e22;
+            --attendance-color: #9b59b6;
+            --background-dark: #121212;
+            --surface-dark: #1e1e1e;
+            --text-primary: #ffffff;
+            --text-secondary: #b3b3b3;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-dark);
+            color: var(--text-primary);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .app-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .header {
+            text-align: center;
+            padding: 1.5rem 0;
+            background-color: var(--surface-dark);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            z-index: 10;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2.2rem;
+            font-weight: 300;
+            letter-spacing: 1px;
+            color: var(--primary-color);
+        }
+
+        .content-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem;
+            gap: 1.5rem;
+            overflow: hidden;
+        }
+
+        .notice-display {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--surface-dark);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .notice-header {
+            padding: 0.8rem;
+            background-color: var(--primary-color);
+            color: white;
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: 500;
+        }
+
+        .notice-image-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            background-color: rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        .notice-image {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .notice-info {
+            padding: 0.8rem;
+            background-color: rgba(0, 0, 0, 0.1);
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.8rem;
+            background-color: var(--surface-dark);
+            gap: 0.8rem;
+        }
+
+        .nav-button {
+            flex: 1;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .nav-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-button:active {
+            transform: translateY(0);
+        }
+
+        .nav-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        #notice-prev {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        #notice-pnext {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        #scan-button {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        #record-attendance {
+            background-color: var(--attendance-color);
+            color: white;
+        }
+
+        .no-notices {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+        }
+
+        .scan-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 1.5rem 2.5rem;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            z-index: 1000;
+            display: none;
+            text-align: center;
+            max-width: 80%;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            line-height: 1.6;
+        }
+
+        #back-button {
+            background-color: #555;
+            color: white;
+        }
+
+        .button-row {
+            display: flex;
+            gap: 0.8rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .button-row .nav-button {
+            margin: 0;
+        }
+
+        #voice-button {
+            flex: 1;
+            border: none;
+            border-radius: 0px;
+            background-color: #b5a000;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        @media (orientation: portrait) {
+            .content-area {
+                padding: 1rem;
+                gap: 1rem;
+            }
+
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .nav-button {
+                padding: 0.7rem;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <div class="header">
+            <h1>SMART NOTICE BOARD</h1>
+        </div>
+
+        <div class="content-area">
+            <div class="notice-display">
+                <div class="notice-header" id="current-notice-type">NOTICE BOARD</div>
+                <div class="notice-image-container">
+                    <img id="current-notice-image" class="notice-image" src="" alt="Notice Image">
+                    <div id="no-notices" class="no-notices" style="display: none;">
+                        No notices available at this time
+                    </div>
+                </div>
+                <div class="notice-info">
+                    <div id="current-notice-title"></div>
+                    <div id="current-notice-dates"></div>
+                </div>
+            </div>
+
+            <!-- Added button row for back button -->
+            <div class="button-row">
+                <button id="back-button" class="nav-button">↩ BACK (B)</button>
+            </div>
+            <div class="navigation">
+                <button id="notice-prev" class="nav-button">⏴ PREV (A)</button>
+                <button id="scan-button" class="nav-button">🔍 SCAN (S)</button>
+                <button id="record-attendance" class="nav-button">📝 RECORD (W)</button>
+                <button id="voice-button" class="nav-button">🎤 VOICE (V)</button>
+                <button id="notice-pnext" class="nav-button">⏵ NEXT (D)</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="scan-message" class="scan-message"></div>
+
+    <script>
+        // Combined notices data with safe fallbacks
+        const eventNotices = JSON.parse('{{ events|tojson|safe }}' || '[]');
+        const announcementNotices = JSON.parse('{{ announcements|tojson|safe }}' || '[]');
+        const displayDuration = parseInt('{{ display_duration|default(20) }}') * 1000;
+
+        // Combine all notices into one array
+        let allNotices = [];
+
+
+        // Process events
+        eventNotices.forEach(notice => {
+            allNotices.push({
+                ...notice,
+                type: 'EVENT',
+                displayType: 'EVENT'
+            });
+        });
+
+        // Process announcements
+        announcementNotices.forEach(notice => {
+            allNotices.push({
+                ...notice,
+                type: 'ANNOUNCEMENT',
+                displayType: 'ANNOUNCEMENT'
+            });
+        });
+
+        let currentNoticeIndex = 0;
+        let rotationInterval;
+
+        function showScanMessage(message, duration = 3000) {
+            const scanMessage = document.getElementById('scan-message');
+            scanMessage.textContent = message;
+            scanMessage.style.display = 'block';
+            if (duration > 0) {
+                setTimeout(() => {
+                    scanMessage.style.display = 'none';
+                }, duration);
+            }
+        }
+
+        function showNotice(index) {
+            const noNoticeElement = document.getElementById('no-notices');
+            const imageElement = document.getElementById('current-notice-image');
+            const typeElement = document.getElementById('current-notice-type');
+            const titleElement = document.getElementById('current-notice-title');
+            const dateElement = document.getElementById('current-notice-dates');
+            const prevButton = document.getElementById('notice-prev');
+            const nextButton = document.getElementById('notice-pnext');
+
+            if (allNotices.length === 0) {
+                noNoticeElement.style.display = 'block';
+                imageElement.style.display = 'none';
+                typeElement.textContent = 'NO NOTICES';
+                titleElement.textContent = '';
+                dateElement.textContent = '';
+                prevButton.disabled = true;
+                nextButton.disabled = true;
+                return;
+            }
+
+            noNoticeElement.style.display = 'none';
+            imageElement.style.display = 'block';
+
+            // Handle circular navigation
+            currentNoticeIndex = (index + allNotices.length) % allNotices.length;
+            const notice = allNotices[currentNoticeIndex];
+
+            // Update display
+            typeElement.textContent = notice.displayType;
+            titleElement.textContent = notice.name;
+            dateElement.textContent = `From: ${notice.from_date} • To: ${notice.to_date}`;
+
+            // Set image source with proper path
+            const imgElement = document.getElementById('current-notice-image');
+            imgElement.src = `/static/uploads/notices/${notice.image_path}`;
+            imgElement.alt = notice.name;
+
+            // Update button states
+            prevButton.disabled = allNotices.length <= 1;
+            nextButton.disabled = allNotices.length <= 1;
+        }
+
+        function nextNotice() {
+            showNotice(currentNoticeIndex + 1);
+        }
+
+        function prevNotice() {
+            showNotice(currentNoticeIndex - 1);
+        }
+
+        function startRotation() {
+            if (allNotices.length > 1) {
+                clearInterval(rotationInterval);
+                rotationInterval = setInterval(nextNotice, displayDuration);
+            }
+        }
+
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            showNotice(0);
+            startRotation();
+
+            // Back button functionality - simple page refresh
+            document.getElementById('back-button').addEventListener('click', () => {
+                window.location.reload();
+            });
+
+            // Navigation buttons
+            document.getElementById('notice-prev').addEventListener('click', () => {
+                clearInterval(rotationInterval);
+                prevNotice();
+                startRotation();
+            });
+
+            document.getElementById('notice-pnext').addEventListener('click', () => {
+                clearInterval(rotationInterval);
+                nextNotice();
+                startRotation();
+            });
+
+            // Scan button
+            document.getElementById('scan-button').addEventListener('click', () => {
+                showScanMessage("Scanning NFC card...", 0);
+
+                fetch('/scan_nfc', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            allNotices = data.notices;
+                            currentNoticeIndex = 0;
+                            showNotice(0);
+                            startRotation();
+                            showScanMessage(`Showing ${data.notice_type} notices`, 2000);
+                        } else {
+                            showScanMessage(`Error: ${data.error}`, 3000);
+                        }
+                    })
+                    .catch(error => {
+                        showScanMessage(`Error: ${error.message}`, 3000);
+                    });
+            });
+
+            // Attendance button
+            document.getElementById('record-attendance').addEventListener('click', () => {
+                showScanMessage("Scan NFC card to record attendance...", 0);
+
+                fetch('/record_attendance', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            showScanMessage(`${data.message}\nTime: ${data.time}`, 3000);
+                        } else {
+                            showScanMessage(data.message, 3000);
+                        }
+                    })
+                    .catch(error => {
+                        showScanMessage(`Error: ${error.message}`, 3000);
+                    });
+            });
+
+            // Keyboard controls
+            document.addEventListener('keydown', (e) => {
+                const key = e.key.toLowerCase();
+                if (key === 'a') {
+                    clearInterval(rotationInterval);
+                    prevNotice();
+                    startRotation();
+                } else if (key === 'd') {
+                    clearInterval(rotationInterval);
+                    nextNotice();
+                    startRotation();
+                } else if (key === 's') {
+                    document.getElementById('scan-button').click();
+                } else if (key === 'w') {
+                    document.getElementById('record-attendance').click();
+                } else if (key === 'b') {
+                    window.location.reload();
+                }else if (key === 'v' || key === 'V') {
+    window.location.href = "/voice";
+}
+            });
+
+            // Image error handling
+            document.getElementById('current-notice-image').onerror = function () {
+                console.error("Failed to load image:", this.src);
+                this.src = '';
+                this.alt = 'Image not available';
+                this.style.display = 'none';
+                document.getElementById('no-notices').style.display = 'block';
+                document.getElementById('no-notices').textContent = 'Image failed to load';
+            };
+        });
+    </script>
+</body>
+
+</html>

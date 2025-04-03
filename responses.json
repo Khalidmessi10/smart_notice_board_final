@@ -1,0 +1,23 @@
+{
+    "1": [
+        "1. Go to the stairs. \n 2. Climb to the first floor.\n 3. Take a right.",
+        "1. Head to the main building.\n 2. Go up to the first floor.\n 3. Turn right.",
+        "1. Walk to the staircase.\n 2. Ascend to the first floor.\n 3. Take a right turn."
+    ],
+    "2": [
+        "1. Go to the second floor. \n 2. Walk straight. \n 3. It's the third door on the left.",
+        "1. Head to the second floor. \n 2. Go straight ahead. 3. Look for the third door on your left.",
+        "1. Head to the second floor. \n 2. Go straight ahead.\n 3. Look for the third door on your left.",
+        "1. Take the elevator to the second floor. \n 2. Walk straight \n. 3. It's the third room on the left."
+    ],
+    "3": [
+        "Nature is beautiful!",
+        "Enjoy the serenity of nature.",
+        "Take a deep breath and relax in nature."
+    ],
+    "4": [
+        "The forest is full of life.",
+        "Explore the wonders of the forest.",
+        "Listen to the sounds of the forest."
+    ]
+}
