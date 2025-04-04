@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Navigation</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #121212;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #3498db;
+        }
+        
+        .voice-container {
+            width: 90%;
+            max-width: 800px;
+            background-color: #1e1e1e;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        
+        .image-frame {
+            width: 100%;
+            height: 300px;
+            background-color: #2c3e50;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border-radius: 8px;
+        }
+        
+        .location-image {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        
+        .text-box {
+            width: 100%;
+            min-height: 100px;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            background-color: #2c3e50;
+            color: white;
+            border: 1px solid #3498db;
+        }
+        
+        .response-box {
+            width: 100%;
+            min-height: 100px;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            background-color: #2c3e50;
+            color: white;
+            border: 1px solid #27ae60;
+            display: none;
+        }
+        
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+        
+        .voice-button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            background-color: #3498db;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        .voice-button:hover {
+            background-color: #2980b9;
+        }
+        
+        #startButton {
+            background-color: #27ae60;
+        }
+        
+        #startButton:hover {
+            background-color: #219653;
+        }
+        
+        #clearButton {
+            background-color: #e74c3c;
+        }
+        
+        #clearButton:hover {
+            background-color: #c0392b;
+        }
+        
+        #backButton {
+            background-color: #7f8c8d;
+            width: 100%;
+        }
+        
+        #backButton:hover {
+            background-color: #95a5a6;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Voice Navigation</h1>
+    </div>
+    
+    <div class="voice-container">
+        <div class="image-frame">
+            <img id="locationImage" class="location-image" src="" alt="Location Image" style="display: none;">
+            <div id="noImage" style="color: #bdc3c7;">Image will appear here</div>
+        </div>
+        
+        <div id="responseBox" class="response-box"></div>
+        
+        <textarea id="voiceText" class="text-box" placeholder="Your voice input will appear here..." readonly></textarea>
+        
+        <div class="button-group">
+            <button id="startButton" class="voice-button">🎤 Start Microphone (1)</button>
+            <button id="submitButton" class="voice-button">📤 Submit Voice (2)</button>
+            <button id="clearButton" class="voice-button">🗑️ Clear Text (3)</button>
+        </div>
+        
+        <button id="backButton" class="voice-button">↩ Back to Notices (B)</button>
+    </div>
+
+    <script>
+        // Voice recognition
+        let recognition;
+        const voiceText = document.getElementById('voiceText');
+        const startButton = document.getElementById('startButton');
+        const submitButton = document.getElementById('submitButton');
+        const clearButton = document.getElementById('clearButton');
+        const backButton = document.getElementById('backButton');
+        const responseBox = document.getElementById('responseBox');
+        const locationImage = document.getElementById('locationImage');
+        const noImage = document.getElementById('noImage');
+        
+        // Initialize voice recognition
+        if ('webkitSpeechRecognition' in window) {
+            recognition = new webkitSpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            
+            recognition.onstart = function() {
+                startButton.textContent = "🎤 Listening...";
+                startButton.disabled = true;
+                voiceText.placeholder = "Listening...";
+            };
+            
+            recognition.onresult = function(event) {
+                const transcript = event.results[0][0].transcript;
+                voiceText.value = transcript;
+                startButton.textContent = "🎤 Start Microphone (1)";
+                startButton.disabled = false;
+            };
+            
+            recognition.onerror = function(event) {
+                console.error("Recognition error:", event.error);
+                startButton.textContent = "🎤 Start Microphone (1)";
+                startButton.disabled = false;
+                voiceText.placeholder = "Error occurred. Try again.";
+            };
+            
+            recognition.onend = function() {
+                if (startButton.textContent === "🎤 Listening...") {
+                    startButton.textContent = "🎤 Start Microphone (1)";
+                    startButton.disabled = false;
+                    voiceText.placeholder = "Your voice input will appear here...";
+                }
+            };
+        } else {
+            startButton.disabled = true;
+            voiceText.placeholder = "Voice recognition not supported in this browser";
+        }
+        
+        // Button event listeners
+        startButton.addEventListener('click', function() {
+            if (recognition) {
+                voiceText.value = "";
+                recognition.start();
+            }
+        });
+        
+        clearButton.addEventListener('click', function() {
+            voiceText.value = "";
+            responseBox.style.display = "none";
+            locationImage.style.display = "none";
+            noImage.style.display = "block";
+        });
+        
+        submitButton.addEventListener('click', async function() {
+    const text = voiceText.value.trim();
+    if (!text) {
+        alert("Please record some voice input first");
+        return;
+    }
+    
+    try {
+        const response = await fetch('/process_voice', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ text: text })
+        });
+        
+        const data = await response.json();
+        if (data.success) {
+            responseBox.textContent = data.response;
+            responseBox.style.display = "block";
+            
+            if (data.image_path) {
+                locationImage.src = "/static/" + data.image_path;
+                locationImage.style.display = "block";
+                noImage.style.display = "none";
+            }
+        } else {
+            responseBox.textContent = data.message;
+            responseBox.style.display = "block";
+        }
+    } catch (error) {
+        responseBox.textContent = "Error: " + error.message;
+        responseBox.style.display = "block";
+    }
+});;
+        
+        backButton.addEventListener('click', function() {
+            window.location.href = "/view_notices";
+        });
+        
+        // Keyboard controls
+        document.addEventListener('keydown', function(e) {
+            const key = e.key;
+            
+            if (key === '1') {
+                startButton.click();
+            } else if (key === '2') {
+                submitButton.click();
+            } else if (key === '3') {
+                clearButton.click();
+            } else if (key === 'b' || key === 'B') {
+                backButton.click();
+            }
+        });
+    </script>
+</body>
+</html>
